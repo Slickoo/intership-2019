@@ -76,7 +76,10 @@ namespace ObjectBrowser.MetadataMenu
 
 		private static void PrintMemberInfoProperties(MemberInfo memberInfo)
 		{
-			var memberInfoType = memberInfo.GetType(); // get concrete type in runtime
+            
+            var memberInfoType = memberInfo.GetType(); // get concrete type in runtime
+            
+            
 
 			var properties = memberInfoType.GetProperties();
 
@@ -86,13 +89,44 @@ namespace ObjectBrowser.MetadataMenu
 
 			var format = "\t{0,-" + maxPropertyNameLength.ToString() + "}: {1}";
 
-			foreach (var propertyInfo in properties.OrderBy(x => x.MemberType).ThenBy(x => x.Name))
+            if (memberInfo.MemberType == MemberTypes.Method)
+            {
+                MethodInfo method = (MethodInfo)memberInfo;
+                foreach (var param in method.GetParameters())
+                {
+                    Console.WriteLine(format, param.Name, param.ParameterType);
+                    Console.WriteLine($"\t\tisOptional:{param.IsOptional} \n\t\tDefault value:{param.DefaultValue} ");
+                   
+                }
+            }
+            foreach (var propertyInfo in properties.OrderBy(x => x.MemberType).ThenBy(x => x.Name))
 			{
 				Console.WriteLine(format, propertyInfo.Name, propertyInfo.GetValue(memberInfo));
-			}
+               
+            }
 		}
 
-		private static string GetMemberInfoString(MemberInfo memberInfo)
+
+        //Method for parameter browser 
+        //private static void PrintParamsOfIntsance(PropertyInfo propertyInfo)
+        //{
+
+        //    var properties = propertyInfo.Ge;
+
+        //    var maxPropertyNameLength = properties.Max(x => x.Name.Length);
+
+        //    Console.WriteLine(GetMemberInfoString(memberInfo));
+
+        //    var format = "\t{0,-" + maxPropertyNameLength.ToString() + "}: {1}";
+
+        //    foreach (var propertyInfo in properties.OrderBy(x => x.MemberType).ThenBy(x => x.Name))
+        //    {
+        //        Console.WriteLine(format, propertyInfo.Name, propertyInfo.GetValue(memberInfo));
+        //    }
+        //}
+
+
+        private static string GetMemberInfoString(MemberInfo memberInfo)
 		{
 			if (memberInfo is MethodInfo methodInfo)
 			{
