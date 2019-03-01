@@ -94,9 +94,11 @@ namespace ObjectBrowser.MetadataMenu
                 MethodInfo method = (MethodInfo)memberInfo;
                 foreach (var param in method.GetParameters())
                 {
-                    Console.WriteLine(format, param.Name, param.ParameterType);
-                    Console.WriteLine($"\t\tisOptional:{param.IsOptional} \n\t\tDefault value:{param.DefaultValue} ");
-                   
+                    //Console.WriteLine(format, param.Name, param.ParameterType); 
+                    // Console.WriteLine($"\t\tisOptional:{param.IsOptional} \n\t\tDefault value:{param.DefaultValue} ");
+                    Console.WriteLine(ParameterInfoString(param));
+
+
                 }
             }
             foreach (var propertyInfo in properties.OrderBy(x => x.MemberType).ThenBy(x => x.Name))
@@ -125,6 +127,17 @@ namespace ObjectBrowser.MetadataMenu
         //    }
         //}
 
+        private static string ParameterInfoString(ParameterInfo parameter)
+        {
+            var stringBuilder = new StringBuilder($"\tParameter: {parameter.Name} \n\tParameter type: {parameter.ParameterType}\n")
+                .Append($"\t\t\tisOptional:{parameter.IsOptional}\n")
+                .Append($"\t\t\tisHas defalt value:{parameter.HasDefaultValue}\n")
+                .Append($"\t\t\tisDefalt value:{parameter.DefaultValue}\n");
+
+
+
+            return stringBuilder.ToString();
+        }
 
         private static string GetMemberInfoString(MemberInfo memberInfo)
 		{
