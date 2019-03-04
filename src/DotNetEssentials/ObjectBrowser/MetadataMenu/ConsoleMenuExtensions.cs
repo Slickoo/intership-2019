@@ -20,7 +20,7 @@ namespace ObjectBrowser.MetadataMenu
 				throw new ArgumentNullException(nameof(assemblies));
 			}
 
-			var result = new CompositeMenuCommand(header, parent ?? ExitMenuCommand.Instance);
+            CompositeMenuCommand result = new CompositeMenuCommand(header, parent ?? ExitMenuCommand.Instance);
 
 			var commands = assemblies
 				.OrderBy(asm => asm.GetName().Name)
@@ -94,49 +94,31 @@ namespace ObjectBrowser.MetadataMenu
                 MethodInfo method = (MethodInfo)memberInfo;
                 foreach (var param in method.GetParameters())
                 {
-                    //Console.WriteLine(format, param.Name, param.ParameterType); 
-                    // Console.WriteLine($"\t\tisOptional:{param.IsOptional} \n\t\tDefault value:{param.DefaultValue} ");
                     Console.WriteLine(ParameterInfoString(param));
-
-
                 }
             }
             foreach (var propertyInfo in properties.OrderBy(x => x.MemberType).ThenBy(x => x.Name))
 			{
 				Console.WriteLine(format, propertyInfo.Name, propertyInfo.GetValue(memberInfo));
-               
             }
 		}
 
 
-        //Method for parameter browser 
-        //private static void PrintParamsOfIntsance(PropertyInfo propertyInfo)
-        //{
-
-        //    var properties = propertyInfo.Ge;
-
-        //    var maxPropertyNameLength = properties.Max(x => x.Name.Length);
-
-        //    Console.WriteLine(GetMemberInfoString(memberInfo));
-
-        //    var format = "\t{0,-" + maxPropertyNameLength.ToString() + "}: {1}";
-
-        //    foreach (var propertyInfo in properties.OrderBy(x => x.MemberType).ThenBy(x => x.Name))
-        //    {
-        //        Console.WriteLine(format, propertyInfo.Name, propertyInfo.GetValue(memberInfo));
-        //    }
-        //}
-
+        //Method for printing info about method parameter
+       
         private static string ParameterInfoString(ParameterInfo parameter)
         {
-            var stringBuilder = new StringBuilder($"\tParameter: {parameter.Name} \n\tParameter type: {parameter.ParameterType}\n")
-                .Append($"\t\t\tisOptional:{parameter.IsOptional}\n")
-                .Append($"\t\t\tisHas defalt value:{parameter.HasDefaultValue}\n")
-                .Append($"\t\t\tisDefalt value:{parameter.DefaultValue}\n");
+            var strBuilder = new StringBuilder();
+           
+            var properties = parameter.GetType().GetProperties();
+            var maxPropertyNameLength = properties.OrderByDescending(x => x.Name.Length).Take(1).SingleOrDefault().Name.Length;
 
-
-
-            return stringBuilder.ToString();
+            var format = "\t{0,-" + maxPropertyNameLength.ToString() + "}: {1}\n";
+            foreach (var property in properties)
+            {
+                strBuilder.AppendFormat(format, property.Name, property.GetValue(parameter));
+            }
+            return strBuilder.ToString();      
         }
 
         private static string GetMemberInfoString(MemberInfo memberInfo)
